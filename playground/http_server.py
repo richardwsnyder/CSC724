@@ -11,7 +11,8 @@ async def hello(request):
     profile['fullname'] = 'Carl Wheezer'
     return web.Response(text=json.dumps(profile))
 
-app = web.Application()
-app.add_routes(routes)
+def http_server_worker_thread():
+    app = web.Application()
+    app.add_routes(routes)
 
-web.run_app(app)
+    web.run_app(app)
