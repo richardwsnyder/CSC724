@@ -17,14 +17,21 @@ aio.run_until_complete(kad.listen(8889))
 
 aio.run_until_complete(kad.bootstrap([("127.0.0.1", 8888)]))
 
-# set a value for the key "my-key" on the network
-aio.run_until_complete(kad.set("ashafer", "http://127.0.0.1:8080"))
-
+aio.run_until_complete(asyncio.sleep(2))
 # get the value associated with "my-key" from the network
-result = aio.run_until_complete(kad.get("ashafer"))
+result = aio.run_until_complete(kad.get("cwheezer"))
 print("Client: " + str(result))
 
 # Now that we have gotten the users address from the network,
 # lets get their json profile
 response = requests.get(str(result) + "/")
 print(response.json())
+
+# run forever since we are the first node
+try:
+    aio.run_forever()
+except KeyboardInterrupt:
+    pass
+finally:
+    kad.stop()
+    aio.close()
