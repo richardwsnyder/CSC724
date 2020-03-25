@@ -2,7 +2,8 @@ import asyncio
 import logging
 from kademlia.network import Server
 
-def kad_server_worker_thread():
+# entrypoint from sad.py
+def kad_server_worker_thread(args):
     handler = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     handler.setFormatter(formatter)
@@ -13,7 +14,7 @@ def kad_server_worker_thread():
     aio = asyncio.get_event_loop()
     kad = Server()
 
-    aio.run_until_complete(kad.listen(8888))
+    aio.run_until_complete(kad.listen(args['network_port']))
     aio.set_debug(True)
 
     while len(kad.bootstrappable_neighbors()) == 0:
