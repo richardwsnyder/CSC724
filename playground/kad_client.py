@@ -16,11 +16,11 @@ def kad_client_worker(args):
     kad = Server()
 
     aio.run_until_complete(kad.listen(8889))
-    aio.run_until_complete(kad.bootstrap([("127.0.0.1", 8888)]))
+    aio.run_until_complete(kad.bootstrap([(args['neighbor_ip'], args['neighbor_port'])]))
     aio.run_until_complete(asyncio.sleep(2))
 
     # get the value associated with "my-key" from the network
-    result = aio.run_until_complete(kad.get("cwheezer"))
+    result = aio.run_until_complete(kad.get(args['username']))
     print("Client: " + str(result))
 
     # Now that we have gotten the users address from the network,

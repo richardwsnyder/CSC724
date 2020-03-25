@@ -17,8 +17,10 @@ async def hello(request):
 async def run_site(args, app):
     runner = web.AppRunner(app)
     await runner.setup()
-    site = web.TCPSite(runner, args['profile_addr'])
+    print("Running http_server at 0.0.0.0:" + str(args['profile_port']))
+    site = web.TCPSite(runner, '0.0.0.0', args['profile_port'])
     await site.start()
+    print("site started")
 
 # entrypoint from sad.py
 def http_server_worker_thread(args):
@@ -26,4 +28,5 @@ def http_server_worker_thread(args):
     app = web.Application()
     app.add_routes(routes)
     aio.run_until_complete(run_site(args, app))
+    aio.run_forever()
 
