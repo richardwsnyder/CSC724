@@ -11,6 +11,8 @@ def kad_server_worker_thread(args, verb):
     else:
         print('did not recognize argument ' + verb)
 
+# bootstrap a new network
+# aka we are the first node
 def kad_server_bootstrap(network_port, profile_port, username):
     handler = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -40,7 +42,7 @@ def kad_server_bootstrap(network_port, profile_port, username):
         kad.stop()
         aio.close()
 
-
+# join an existing network (the neighbor)
 def kad_server_join(network_port, profile_port, neighbor_ip, neighbor_port, username):
     handler = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
