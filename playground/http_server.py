@@ -2,6 +2,7 @@
 import json
 import asyncio
 import kad_client
+import os
 from aiohttp import web
 from kademlia.network import Server
 
@@ -10,15 +11,16 @@ our_username = ""
 routes = web.RouteTableDef()
 
 def get_our_profile():
-    profile = {}
-    profile['username'] = 'cwheezer'
-    profile['fullname'] = 'Carl Wheezer'
+    path = os.path.dirname(os.path.realpath(__file__))
+    profile = ''
+    with open(path + '/profile/profile.html', 'r') as content_file:
+        profile = content_file.read()
     return profile
 
 @routes.get('/')
 async def hello(request):
     profile = get_our_profile()
-    return web.Response(text=json.dumps(profile))
+    return web.Response(body=profile, content_type='text/html')
 
 @routes.get('/user/{username}')
 async def get_user_profile(request):
@@ -33,10 +35,9 @@ async def get_user_profile(request):
         profile = get_our_profile()
     else:
         profile = await kad_client.get_user_profile(kad, username)
-        profile = profile.json()
     print(profile)
     kad.stop()
-    return web.Response(text=str(profile))
+    return web.Response(text=str(profile), content_type='text/html')
 
 # apparently we need to use the asyncio application
 # runner to set the address... weird

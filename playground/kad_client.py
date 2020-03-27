@@ -11,11 +11,13 @@ async def get_user_profile(kad, username):
     # get the value associated with "my-key" from the network
     result = await kad.get(username)
     print("Client: " + str(result))
+    if str(result) == 'None':
+        return '<html><h>User ' + username + ' not found</h></html>'
 
     # Now that we have gotten the users address from the network,
     # lets get their json profile
     response = requests.get(str(result) + "/")
-    return response
+    return response.json()
 
 
 def kad_client(neighbor_ip, neighbor_port, username):
