@@ -40,7 +40,7 @@ def get_user(request, username):
     else:
         loop = asyncio.new_event_loop()
         kad = Server()
-        loop.run_until_complete(kad.listen())
+        loop.run_until_complete(kad.listen(8889))
         print('querying network at {}:{}', 'localhost', kad_port)
         loop.run_until_complete(kad.bootstrap([('localhost', kad_port)]))
         profile = loop.run_until_complete(kad_client.get_user_profile(kad, username))
@@ -52,4 +52,4 @@ def get_user(request, username):
 
 def index(request):
     get_config()
-    return HttpResponse("Hello, world. You're at the user profile")
+    return HttpResponse(get_our_profile())

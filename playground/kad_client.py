@@ -32,7 +32,7 @@ def kad_client(neighbor_ip, neighbor_port, username):
     aio = asyncio.get_event_loop()
     kad = Server()
 
-    aio.run_until_complete(kad.listen())
+    aio.run_until_complete(kad.listen(8889))
     aio.run_until_complete(kad.bootstrap([(neighbor_ip, neighbor_port)]))
 
     resp = aio.run_until_complete(get_user_profile(kad, username))
