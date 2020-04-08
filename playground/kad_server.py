@@ -1,13 +1,26 @@
 import asyncio
 import logging
+import os
+import toml
 from kademlia.network import Server
 
+def get_config():
+    path = os.environ['SAD_CONFIG_FILE']
+    config = ''
+    with open(path, 'r') as content_file:
+        config = toml.load(content_file)
+
+    return config
+
 # entrypoint from sad.py
-def kad_server_worker_thread(args, verb):
+def kad_server_worker_thread():
+    config = get_config()
+    cf_conn = config['connection']
+    verb = cf_conn['action']
     if verb == "bootstrap":
-        kad_server_bootstrap(args['network_port'], args['profile_port'], args['username'])
+        kad_server_bootstrap(cf_conn['network_port'], cf_conn['profile_port'], config['account']['username'])
     elif verb == "join":
-        kad_server_join(args['network_port'], args['profile_port'], args['neighbor_ip'], args['neighbor_port'], args['username'])
+        kad_server_join(cf_conn['network_port'], cf_conn['profile_port'], cf_conn['neighbor_ip'], cf_conn['neighbor_port'], config['account']['username'])
     else:
         print('did not recognize argument ' + verb)
 

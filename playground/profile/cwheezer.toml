@@ -1,0 +1,8 @@
+[account]
+username='cwheezer'
+fullname='Carl Wheezer'
+
+[connection]
+action='bootstrap'
+network_port=7777
+profile_port=8000

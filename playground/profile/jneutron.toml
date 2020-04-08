@@ -1,0 +1,10 @@
+[account]
+username='jneutron'
+fullname='Jimmy Neutron'
+
+[connection]
+action='join'
+network_port=7778
+profile_port=8001
+neighbor_ip='localhost'
+neighbor_port=7777
