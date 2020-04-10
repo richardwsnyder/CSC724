@@ -37,14 +37,7 @@ def get_our_profile():
     return profile
 
 def get_user_remote(username):
-    loop = asyncio.new_event_loop()
-    kad = Server()
-    loop.run_until_complete(kad.listen(8889))
-    print('querying network at {}:{}', 'localhost', kad_port)
-    loop.run_until_complete(kad.bootstrap([('localhost', kad_port)]))
-    profile = loop.run_until_complete(kad_client.get_user_profile(kad, username))
-    kad.stop()
-    loop.close()
+    profile=''
     return profile
 
 def get_user(request, username):

@@ -12,8 +12,22 @@ def get_config():
 
     return config
 
+# this should be a pipe
+pipe = ''
+
+async def get_single_pipe_input():
+    print('kad_server: waiting for input')
+    work_order = pipe.recv()
+    print('kad_server got work order: ' + str(work_order))
+
+def main_loop(aio):
+    while 1:
+        aio.run_until_complete(get_single_pipe_input())
+    
 # entrypoint from sad.py
-def kad_server_worker_thread(queue):
+def kad_server_worker_thread(p):
+    global pipe
+    pipe = p
     config = get_config()
     print('kad_server: ' + str(config))
     cf_conn = config['connection']
@@ -46,10 +60,11 @@ def kad_server_bootstrap(network_port, profile_port, username):
 
     # set a value for the key "my-key" on the network
     aio.run_until_complete(kad.set(username, "http://127.0.0.1:" + str(profile_port)))
+    aio.run_until_complete(asyncio.sleep(2))
 
     # run forever since we are the first node
     try:
-        aio.run_forever()
+        main_loop(aio)
     except KeyboardInterrupt:
         pass
     finally:
@@ -74,10 +89,11 @@ def kad_server_join(network_port, profile_port, neighbor_ip, neighbor_port, user
 
     # set a value for the key "my-key" on the network
     aio.run_until_complete(kad.set(username, "http://127.0.0.1:" + str(profile_port)))
+    aio.run_until_complete(asyncio.sleep(2))
 
     # run forever since we are the first node
     try:
-        aio.run_forever()
+        main_loop(aio)
     except KeyboardInterrupt:
         pass
     finally:

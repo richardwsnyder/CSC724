@@ -33,11 +33,11 @@ class Command(BaseCommand):
         if os.environ.get('RUN_MAIN') != 'true':
             print('handling the run command')
 
-            global_config.queue = multiprocessing.Queue()
+            global_config.pipe, child_pipe = multiprocessing.Pipe()
         
             # The kademlia network replaces the central servers of a system like naptser,
             # it is used by clients to find out where the user profiles are hosted.
-            kad_proc = multiprocessing.Process(target=kad_server.kad_server_worker_thread, args=(global_config.queue,))
+            kad_proc = multiprocessing.Process(target=kad_server.kad_server_worker_thread, args=(child_pipe,))
             kad_proc.start()
 
         call_command('runserver', addrport, *args, **kwargs)

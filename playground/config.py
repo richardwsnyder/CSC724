@@ -1,4 +1,4 @@
 import multiprocessing
 
-# this should be a Queue filled in by django
-queue = ''
+# this should be a Pipe filled in by django
+pipe = ''
