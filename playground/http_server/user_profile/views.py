@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from user_profile.models import *
 
 import json
 import asyncio
 import kad_client
 import os
-from aiohttp import web
 from kademlia.network import Server
 import toml
+from datetime import datetime
 
 config = -1
 kad_port = -1
@@ -49,6 +50,15 @@ def get_user(request, username):
 
     print(profile)
     return HttpResponse(profile)
+
+def get_posts(request):
+    html = '<div>'
+
+    for p in Post.objects.all():
+        html = html + '<p>' + p.text + '</p>'
+
+    html = html + '<div>'
+    return HttpResponse(html)
 
 def index(request):
     get_config()
