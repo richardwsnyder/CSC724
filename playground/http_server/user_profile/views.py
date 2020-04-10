@@ -4,14 +4,15 @@ from django.core.paginator import Paginator
 
 from user_profile.models import *
 
-
 import json
 import asyncio
-import kad_client
-import os
-from kademlia.network import Server
 import toml
+import os
+
+import kad_client
+from kademlia.network import Server
 from datetime import datetime
+import config as global_config
 
 config = -1
 kad_port = -1
@@ -35,6 +36,17 @@ def get_our_profile():
         profile = content_file.read()
     return profile
 
+def get_user_remote(username):
+    loop = asyncio.new_event_loop()
+    kad = Server()
+    loop.run_until_complete(kad.listen(8889))
+    print('querying network at {}:{}', 'localhost', kad_port)
+    loop.run_until_complete(kad.bootstrap([('localhost', kad_port)]))
+    profile = loop.run_until_complete(kad_client.get_user_profile(kad, username))
+    kad.stop()
+    loop.close()
+    return profile
+
 def get_user(request, username):
     global config
     get_config()
@@ -42,14 +54,7 @@ def get_user(request, username):
     if username == config['account']['username']:
         profile = get_our_profile()
     else:
-        loop = asyncio.new_event_loop()
-        kad = Server()
-        loop.run_until_complete(kad.listen(8889))
-        print('querying network at {}:{}', 'localhost', kad_port)
-        loop.run_until_complete(kad.bootstrap([('localhost', kad_port)]))
-        profile = loop.run_until_complete(kad_client.get_user_profile(kad, username))
-        kad.stop()
-        loop.close()
+        profile = get_user_remote(username)
 
     print(profile)
     return HttpResponse(profile)

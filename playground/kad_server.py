@@ -13,8 +13,9 @@ def get_config():
     return config
 
 # entrypoint from sad.py
-def kad_server_worker_thread():
+def kad_server_worker_thread(queue):
     config = get_config()
+    print('kad_server: ' + str(config))
     cf_conn = config['connection']
     verb = cf_conn['action']
     if verb == "bootstrap":
