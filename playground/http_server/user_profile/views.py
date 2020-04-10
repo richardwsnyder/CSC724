@@ -8,28 +8,16 @@ import json
 import asyncio
 import toml
 import os
+import multiprocessing
 
-import kad_client
+import kad_server
 from kademlia.network import Server
 from datetime import datetime
-import config as global_config
 
-config = -1
-kad_port = -1
-our_username = ""
-
-def get_config():
-    global config
-    if config == -1:
-        path = os.environ['SAD_CONFIG_FILE']
-        print('getting config from ' + path)
-        with open(path, 'r') as content_file:
-            global kad_port
-            config = toml.load(content_file)
-            kad_port = config['connection']['network_port']
+import global_config
+global_config.init()
         
 def get_our_profile():
-    get_config()
     path = os.path.dirname(os.path.realpath(__file__))
     profile = ''
     with open(path + '/../../profile/profile.html', 'r') as content_file:
@@ -37,14 +25,22 @@ def get_our_profile():
     return profile
 
 def get_user_remote(username):
-    profile=''
+    work_order = {}
+    work_order['request'] = 'get_profile'
+    work_order['username'] = username
+
+    # ask kad_server to complete our request
+    print('get_user_remote: sending work order: ' + str(work_order))
+    global_config.pipe.send(work_order)
+
+    # now wait for an answer
+    profile = global_config.pipe.recv()
+    
     return profile
 
 def get_user(request, username):
-    global config
-    get_config()
     profile = {}
-    if username == config['account']['username']:
+    if username == global_config.config['account']['username']:
         profile = get_our_profile()
     else:
         profile = get_user_remote(username)
@@ -76,5 +72,4 @@ def get_posts(request):
     return HttpResponse(html)
 
 def index(request):
-    get_config()
     return HttpResponse(get_our_profile())

@@ -11,6 +11,12 @@ def get_config():
         config = toml.load(content_file)
 
     return config
+def get_our_profile():
+    path = os.path.dirname(os.path.realpath(__file__))
+    profile = ''
+    with open(path + '/profile/profile.html', 'r') as content_file:
+        profile = content_file.read()
+    return profile
 
 # this should be a pipe
 pipe = ''
@@ -19,6 +25,13 @@ async def get_single_pipe_input():
     print('kad_server: waiting for input')
     work_order = pipe.recv()
     print('kad_server got work order: ' + str(work_order))
+
+    if work_order['request'] == 'get_profile':
+        profile = get_our_profile()
+        pipe.send(profile)
+        return
+    
+    pipe.send('Unknown request {}', work_order['request'])
 
 def main_loop(aio):
     while 1:
@@ -49,7 +62,7 @@ def kad_server_bootstrap(network_port, profile_port, username):
     log.addHandler(handler)
     log.setLevel(logging.DEBUG)
 
-    aio = asyncio.get_event_loop()
+    aio = asyncio.new_event_loop()
     kad = Server()
 
     aio.run_until_complete(kad.listen(network_port))
@@ -80,7 +93,7 @@ def kad_server_join(network_port, profile_port, neighbor_ip, neighbor_port, user
     log.addHandler(handler)
     log.setLevel(logging.DEBUG)
 
-    aio = asyncio.get_event_loop()
+    aio = asyncio.new_event_loop()
     kad = Server()
 
     aio.run_until_complete(kad.listen(network_port))
