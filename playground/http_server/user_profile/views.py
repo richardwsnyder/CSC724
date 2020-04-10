@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.core.paginator import Paginator
+
 from user_profile.models import *
+
 
 import json
 import asyncio
@@ -51,10 +54,24 @@ def get_user(request, username):
     print(profile)
     return HttpResponse(profile)
 
+# TODO use a template
 def get_posts(request):
-    html = '<div>'
 
-    for p in Post.objects.all():
+    # get date range
+    num = int(request.GET.get('page', 1))
+
+    # do pagination
+    posts = Post.objects.order_by('-date')
+    # 10 posts per page
+    paginator = Paginator(posts, 4)
+
+    if num not in paginator.page_range:
+        return HttpResponse('')
+    
+    page = paginator.get_page(num)
+
+    html = '<div>'
+    for p in page.object_list:
         html = html + '<p>' + p.text + '</p>'
 
     html = html + '<div>'
