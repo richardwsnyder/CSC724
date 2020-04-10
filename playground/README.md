@@ -26,14 +26,14 @@ is a join example. Run cwheezer first.
 
 The run command is trivial:
 ```
-PYTHONPATH=. python3.7 sad.py /Users/AShafer/csc/CSC724/playground/profile/cwheezer.toml
+python3.7 sad.py /Users/AShafer/csc/CSC724/playground/profile/cwheezer.toml
 ```
+
+This should be run in this directory, otherwise the kad modules will
+not be found.
 
 *NOTE*: for simplicity the path to the config file should be an
  *absolute* path. Things are still a little rough around the edges.
-
-*Note*: for now this needs to be run from this directory, the
- `PYTHONPATH` will tell the http server where to find `kad_client`.
 
 The kademlia client will be axed soon, so eventually this will not be
 needed.
