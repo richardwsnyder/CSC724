@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse,HttpResponseRedirect
 from django.core.paginator import Paginator
+from django.shortcuts import render
 
 from user_profile.models import *
 
@@ -13,6 +14,7 @@ import multiprocessing
 import kad_server
 from kademlia.network import Server
 from datetime import datetime
+from .forms import NewPostForm
 
 import global_config
 global_config.init()
@@ -51,25 +53,33 @@ def get_user(request, username):
 # TODO use a template
 def get_posts(request):
 
-    # get date range
-    num = int(request.GET.get('page', 1))
+    if request.method == 'POST':
+        form = NewPostForm(request.POST)
+        if form.is_valid():
+            p = Post(date=datetime.now(), text=form.cleaned_data['text'])
+            p.save()
+            return HttpResponseRedirect('/posts')
+    else:
+        # get date range
+        num = int(request.GET.get('page', 1))
 
-    # do pagination
-    posts = Post.objects.order_by('-date')
-    # 10 posts per page
-    paginator = Paginator(posts, 4)
+        # do pagination
+        posts = Post.objects.order_by('-date')
+        # 10 posts per page
+        paginator = Paginator(posts, 4)
 
-    if num not in paginator.page_range:
-        return HttpResponse('')
+        if num not in paginator.page_range:
+            return HttpResponse('')
     
-    page = paginator.get_page(num)
+        page = paginator.get_page(num)
 
-    html = '<div>'
-    for p in page.object_list:
-        html = html + '<p>' + p.text + '</p>'
+        temp = {}
+        temp['username'] = global_config.config['account']['username']
+        temp['form'] = NewPostForm()
+        temp['nextpage'] = num + 1
+        temp['posts'] = page.object_list
 
-    html = html + '<div>'
-    return HttpResponse(html)
+        return render(request, 'posts.html', temp)
 
 def index(request):
     return HttpResponse(get_our_profile())
