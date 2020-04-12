@@ -16,7 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include,path
 
+import user_profile.views as views
+
 urlpatterns = [
-    path('', include('user_profile.urls')),
+    path('', views.index, name='index'),
+    path('posts', views.get_posts),
+    path('user/<slug:username>', views.get_user),
     path('admin/', admin.site.urls),
 ]
