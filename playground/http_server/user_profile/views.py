@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 
-import models
+from user_profile.models import *
 
 import json
 import asyncio
