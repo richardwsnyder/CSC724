@@ -1,5 +1,5 @@
 import asyncio
-import logging
+# import logging # Don't import if not used
 import requests
 from kademlia.network import Server
 

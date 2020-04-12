@@ -1,9 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
-from django.shortcuts import render
 
-from user_profile.models import *
+import models
 
 import json
 import asyncio
@@ -18,7 +17,7 @@ from .forms import NewPostForm
 
 import global_config
 global_config.init()
-        
+
 def get_our_profile():
     path = os.path.dirname(os.path.realpath(__file__))
     profile = ''
@@ -37,9 +36,10 @@ def get_user_remote(username):
 
     # now wait for an answer
     profile = global_config.pipe.recv()
-    
+
     return profile
 
+# unused argument request
 def get_user(request, username):
     profile = {}
     if username == global_config.config['account']['username']:
@@ -70,7 +70,7 @@ def get_posts(request):
 
         if num not in paginator.page_range:
             return HttpResponse('')
-    
+
         page = paginator.get_page(num)
 
         temp = {}

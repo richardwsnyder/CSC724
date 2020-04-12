@@ -28,7 +28,9 @@ DEBUG = True
 USE_TZ = True
 TIME_ZONE = 'US/Eastern'
 
-ALLOWED_HOSTS = []
+# might need to read toml file
+# to allow addr
+ALLOWED_HOSTS = ["0.0.0.0"]
 
 
 # Application definition

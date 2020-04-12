@@ -30,13 +30,13 @@ async def get_single_pipe_input():
         profile = get_our_profile()
         pipe.send(profile)
         return
-    
+
     pipe.send('Unknown request {}', work_order['request'])
 
 def main_loop(aio):
     while 1:
         aio.run_until_complete(get_single_pipe_input())
-    
+
 # entrypoint from sad.py
 def kad_server_worker_thread(p):
     global pipe
@@ -46,9 +46,19 @@ def kad_server_worker_thread(p):
     cf_conn = config['connection']
     verb = cf_conn['action']
     if verb == "bootstrap":
-        kad_server_bootstrap(cf_conn['network_port'], cf_conn['profile_port'], config['account']['username'])
+        kad_server_bootstrap(
+            cf_conn['network_port'],
+            cf_conn['profile_port'],
+            config['account']['username']
+        )
     elif verb == "join":
-        kad_server_join(cf_conn['network_port'], cf_conn['profile_port'], cf_conn['neighbor_ip'], cf_conn['neighbor_port'], config['account']['username'])
+        kad_server_join(
+            cf_conn['network_port'],
+            cf_conn['profile_port'],
+            cf_conn['neighbor_ip'],
+            cf_conn['neighbor_port'],
+            config['account']['username']
+        )
     else:
         print('did not recognize argument ' + verb)
 

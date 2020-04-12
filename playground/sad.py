@@ -1,20 +1,23 @@
 import os
 import sys
-import multiprocessing
-import argparse
+# unused imports
+# import multiprocessing
+# import argparse
 
-import kad_server
-import kad_client
-import http_server
+# import kad_server
+# import kad_client
+# import http_server
 import subprocess
 import toml
 
 def get_config():
     path = os.environ['SAD_CONFIG_FILE']
+    print(path)
     config = ''
     with open(path, 'r') as content_file:
         config = toml.load(content_file)
 
+    print(config)
     return config
 
 # Launch processes for the kademlia network and the http server
@@ -28,6 +31,18 @@ config = get_config()
 #
 # --noreload is absolutely required or else the global malarkey i'm
 # doing will be messed up.
-http_proc = subprocess.run(['python3.7', 'http_server/manage.py', 'runserver', '0.0.0.0:' + str(config['connection']['profile_port']), '--noreload'])
-http_proc
 
+# might want to remove python3.7 dependency, but will deal with that
+# at a later time
+
+# runserver is a django command to start a server
+http_proc = subprocess.run(
+    [
+        'python3.7',
+        'http_server/manage.py',
+        'runserver',
+        '0.0.0.0:' + str(config['connection']['profile_port']),
+        '--noreload'
+    ],
+    check=False
+)
