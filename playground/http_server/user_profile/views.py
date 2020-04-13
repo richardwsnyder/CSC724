@@ -1,24 +1,26 @@
+"""
+Functions to hit different routes of data
+"""
+import os
+import time
+from datetime import datetime
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
-
-from user_profile.models import *
-
-import json
-import asyncio
-import toml
-import os
-import multiprocessing
-
-import kad_server
-from kademlia.network import Server
-from datetime import datetime
-from .forms import NewPostForm
-
 import global_config
+from user_profile.models import *
+from .forms import NewPostForm
+# import json
+# import asyncio
+# import toml
+# import multiprocessing
+# import kad_server
+# from kademlia.network import Server
+
 global_config.init()
 
 def get_our_profile():
+    """Get local profile"""
     path = os.path.dirname(os.path.realpath(__file__))
     profile = ''
     with open(path + '/../../profile/profile.html', 'r') as content_file:
@@ -26,6 +28,7 @@ def get_our_profile():
     return profile
 
 def get_user_remote(username):
+    """Get somebody else's (username's) profile"""
     work_order = {}
     work_order['request'] = 'get_profile'
     work_order['username'] = username
@@ -41,18 +44,24 @@ def get_user_remote(username):
 
 # unused argument request
 def get_user(request, username):
+    """Function that maps to one of the above calls"""
     profile = {}
     if username == global_config.config['account']['username']:
+        start = time.time()
         profile = get_our_profile()
+        end = time.time()
+        print("time to get our profile: " + str(end - start))
     else:
+        start = time.time()
         profile = get_user_remote(username)
+        end = time.time()
+        print("time to get " + username + "'s profile: " + str(end - start))
 
-    print(profile)
     return HttpResponse(profile)
 
 # TODO use a template
 def get_posts(request):
-
+    """Get posts from SQLite database"""
     if request.method == 'POST':
         form = NewPostForm(request.POST)
         if form.is_valid():
@@ -82,4 +91,7 @@ def get_posts(request):
         return render(request, 'posts.html', temp)
 
 def index(request):
+    """Return our profile when hitting / route"""
     return HttpResponse(get_our_profile())
+
+# Add routes that 
