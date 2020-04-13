@@ -2,6 +2,7 @@ import asyncio
 import logging
 import os
 import toml
+import requests
 from kademlia.network import Server
 
 def get_config():
@@ -11,31 +12,42 @@ def get_config():
         config = toml.load(content_file)
 
     return config
-def get_our_profile():
-    path = os.path.dirname(os.path.realpath(__file__))
-    profile = ''
-    with open(path + '/profile/profile.html', 'r') as content_file:
-        profile = content_file.read()
-    return profile
+
+async def get_user_profile(kad, username):
+    # get the value associated with "my-key" from the network
+    result = await kad.get(username)
+    print("Client: " + str(result))
+    if str(result) == 'None':
+        return '<html><h>User ' + username + ' not found</h></html>'
+
+    # Now that we have gotten the users address from the network,
+    # lets get their json profile
+    response = requests.get(str(result) + "/")
+    print(response.text)
+    return response.text
+
+def get_user_directory(aio, kad):
+    return 'placeholder'
 
 # this should be a pipe
 pipe = ''
 
-async def get_single_pipe_input():
+async def get_single_pipe_input(aio, kad):
     print('kad_server: waiting for input')
     work_order = pipe.recv()
     print('kad_server got work order: ' + str(work_order))
 
+    profile = 'Unknown request ' +  work_order['request']
     if work_order['request'] == 'get_profile':
-        profile = get_our_profile()
-        pipe.send(profile)
-        return
+        profile = await get_user_profile(kad, work_order['username'])
+    elif work_order['request'] == 'get_directory':
+        profile = get_user_directory(aio, kad)
 
-    pipe.send('Unknown request {}', work_order['request'])
+    pipe.send(profile)
 
-def main_loop(aio):
+def main_loop(aio, kad):
     while 1:
-        aio.run_until_complete(get_single_pipe_input())
+        aio.run_until_complete(get_single_pipe_input(aio, kad))
 
 # entrypoint from sad.py
 def kad_server_worker_thread(p):
@@ -87,7 +99,7 @@ def kad_server_bootstrap(network_port, profile_port, username):
 
     # run forever since we are the first node
     try:
-        main_loop(aio)
+        main_loop(aio, kad)
     except KeyboardInterrupt:
         pass
     finally:
@@ -116,7 +128,7 @@ def kad_server_join(network_port, profile_port, neighbor_ip, neighbor_port, user
 
     # run forever since we are the first node
     try:
-        main_loop(aio)
+        main_loop(aio, kad)
     except KeyboardInterrupt:
         pass
     finally:

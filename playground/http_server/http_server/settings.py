@@ -30,7 +30,7 @@ TIME_ZONE = 'US/Eastern'
 
 # might need to read toml file
 # to allow addr
-ALLOWED_HOSTS = ["0.0.0.0"]
+ALLOWED_HOSTS = ["0.0.0.0", "localhost", "127.0.0.1"]
 
 
 # Application definition
