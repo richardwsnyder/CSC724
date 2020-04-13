@@ -12,12 +12,14 @@ import toml
 
 def get_config():
     path = os.environ['SAD_CONFIG_FILE']
-    print(path)
+    print("path: " + path)
+    # print(path)
     config = ''
     with open(path, 'r') as content_file:
         config = toml.load(content_file)
 
-    print(config)
+    print("config: " + str(config))
+    # print(config)
     return config
 
 # Launch processes for the kademlia network and the http server

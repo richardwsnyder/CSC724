@@ -17,7 +17,8 @@ async def get_user_profile(kad, username):
     # Now that we have gotten the users address from the network,
     # lets get their json profile
     response = requests.get(str(result) + "/")
-    print(response.text)
+    print("response.text: " + response.text)
+    # print(response.text)
     return response.text
 
 
@@ -36,7 +37,8 @@ def kad_client(neighbor_ip, neighbor_port, username):
     aio.run_until_complete(kad.bootstrap([(neighbor_ip, neighbor_port)]))
 
     resp = aio.run_until_complete(get_user_profile(kad, username))
-    print(resp.json())
+    print("resp.json(): " + resp.json())
+    # print(resp.json())
 
     kad.stop()
     aio.close()

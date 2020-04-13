@@ -16,5 +16,5 @@ class Followers(models.Model):
 
 class Following(models.Model):
     """Following list"""
-    nname = models.CharField(max_length=200)
+    name = models.CharField(max_length=200)
     dateAdded = models.DateTimeField('date follower added')

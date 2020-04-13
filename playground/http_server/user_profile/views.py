@@ -10,6 +10,7 @@ from django.core.paginator import Paginator
 import global_config
 from user_profile.models import *
 from .forms import NewPostForm
+import models
 # import json
 # import asyncio
 # import toml
@@ -61,7 +62,7 @@ def get_user(request, username):
 
 # TODO use a template
 def get_posts(request):
-    """Get posts from SQLite database"""
+    """Get or add to posts from SQLite database"""
     if request.method == 'POST':
         form = NewPostForm(request.POST)
         if form.is_valid():
@@ -89,6 +90,16 @@ def get_posts(request):
         temp['posts'] = page.object_list
 
         return render(request, 'posts.html', temp)
+
+# Have to read the Django docs to figure out
+# how to add and remove a username from the
+# db
+
+# def get_following(request):
+#     """Get or add to the list of usernames that you follow"""
+#     if request.method == 'POST':
+#         p = Followers(name='', dateAdded=datetime.now())
+
 
 def index(request):
     """Return our profile when hitting / route"""
