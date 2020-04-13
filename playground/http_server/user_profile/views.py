@@ -42,6 +42,35 @@ def get_user_remote(username):
 
     return profile
 
+def get_posts_remote(request, username):
+    """Get somebody else's (username's) posts"""
+    work_order = {}
+    work_order['request'] = 'get_posts'
+    work_order['username'] = username
+
+    # ask kad_server to complete our request
+    print('get_user_posts_remote: sending work order: ' + str(work_order))
+    global_config.pipe.send(work_order)
+
+    # now wait for an answer
+    posts = global_config.pipe.recv()
+
+    return HttpResponse(posts)
+
+def get_profile_directory(request):
+    """Get a list of all profiles in the network"""
+    work_order = {}
+    work_order['request'] = 'get_directory'
+
+    # ask kad_server to complete our request
+    print('get_user_posts_remote: sending work order: ' + str(work_order))
+    global_config.pipe.send(work_order)
+
+    # now wait for an answer
+    directory = global_config.pipe.recv()
+
+    return HttpResponse(directory)
+    
 # unused argument request
 def get_user(request, username):
     """Function that maps to one of the above calls"""
@@ -59,7 +88,6 @@ def get_user(request, username):
 
     return HttpResponse(profile)
 
-# TODO use a template
 def get_posts(request):
     """Get posts from SQLite database"""
     if request.method == 'POST':

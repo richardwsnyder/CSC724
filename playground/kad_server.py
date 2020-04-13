@@ -4,6 +4,7 @@ import os
 import toml
 import requests
 from kademlia.network import Server
+from kademlia.crawling import *
 
 def get_config():
     path = os.environ['SAD_CONFIG_FILE']
@@ -13,9 +14,12 @@ def get_config():
 
     return config
 
+async def get_url_from_username(kad,username):
+    return await kad.get(username)
+
 async def get_user_profile(kad, username):
     # get the value associated with "my-key" from the network
-    result = await kad.get(username)
+    result = await get_url_from_username(kad, username)
     print("Client: " + str(result))
     if str(result) == 'None':
         return '<html><h>User ' + username + ' not found</h></html>'
@@ -26,7 +30,31 @@ async def get_user_profile(kad, username):
     print(response.text)
     return response.text
 
-def get_user_directory(aio, kad):
+async def get_user_posts(kad, username):
+    # get the value associated with "my-key" from the network
+    result = await get_url_from_username(kad, username)
+    print("Client: " + str(result))
+    if str(result) == 'None':
+        return '<html><h>Posts for user ' + username + ' not found</h></html>'
+
+    # Now that we have gotten the users address from the network,
+    # lets get their json profile
+    response = requests.get(str(result) + "/posts")
+    print(response.text)
+    return response.text
+
+async def get_user_directory(aio, kad):
+    print('get_user_directory:')
+    us = kad.protocol.router.node
+    print('  node - ' + str(us))
+    nearest = kad.protocol.router.find_neighbors(us)
+    print('  nearest - ' + str(nearest))
+    spider = ValueSpiderCrawl(kad.protocol, us, nearest, kad.ksize, kad.alpha)
+
+    nodes = await spider.find()
+    for k in nodes:
+        print(k)
+
     return 'placeholder'
 
 # this should be a pipe
@@ -34,14 +62,18 @@ pipe = ''
 
 async def get_single_pipe_input(aio, kad):
     print('kad_server: waiting for input')
-    work_order = pipe.recv()
+    # we need to wrap any sync blocking calls in this
+    # so that the async engine still runs
+    work_order = await aio.run_in_executor(None, pipe.recv)
     print('kad_server got work order: ' + str(work_order))
 
     profile = 'Unknown request ' +  work_order['request']
     if work_order['request'] == 'get_profile':
         profile = await get_user_profile(kad, work_order['username'])
+    elif work_order['request'] == 'get_posts':
+        profile = await get_user_posts(kad, work_order['username'])
     elif work_order['request'] == 'get_directory':
-        profile = get_user_directory(aio, kad)
+        profile = await get_user_directory(aio, kad)
 
     pipe.send(profile)
 

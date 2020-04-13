@@ -21,6 +21,8 @@ import user_profile.views as views
 urlpatterns = [
     path('', views.index, name='index'),
     path('posts', views.get_posts),
+    path('posts/<slug:username>', views.get_posts_remote),
+    path('directory', views.get_profile_directory),
     path('user/<slug:username>', views.get_user),
     path('admin/', admin.site.urls),
 ]

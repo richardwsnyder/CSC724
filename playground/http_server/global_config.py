@@ -20,7 +20,7 @@ def get_kad_server():
     global pipe
 
     if kad_proc == -1:
-        pipe, child_pipe = multiprocessing.Pipe()
+        pipe, child_pipe = multiprocessing.Pipe(duplex=True)
 
         # The kademlia network replaces the central servers of a system like naptser,
         # it is used by clients to find out where the user profiles are hosted.
