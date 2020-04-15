@@ -8,11 +8,36 @@
 /* Add a black background color to the top navigation */
 .topnav {
     margin: 0 auto;
-    width: 20%; /* Full width */
+    width: 90%; /* Full width */
     font-family: monospace;
     padding-top: 20px;
     padding-bottom: 20px;
-    text-align: center;
+}
+
+.menu {
+    display: inline-block;
+    float: left;
+    width: 65%;
+    top: 50%;
+    padding-bottom: 20px;
+}
+
+.searchbar {
+    display: inline-block;
+    padding-bottom: 20px;
+    float: right;
+    width: 35%;
+    position: absolute;
+    top: 36%;
+}
+
+input[type=button], input[type=submit], input[type=reset] {
+  background-color: #201919;
+  border: none;
+  color: white;
+  padding: 4px 8px;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .top {

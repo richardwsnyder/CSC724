@@ -5,26 +5,30 @@
     <head>
       <meta charset="utf-8">
       <link rel="stylesheet" type="text/css" href="{% static 'navbar.css' %}">
+
     </head>
 
     <!--- Navigation Bar --->
     <div class="top bar">
       <div class="topnav">
-	<div style="display: inline-block;">
+	<div class="menu">
 	  <a href="/">
-	    <b style="text-align:center; width:100%; display:inline-block; font-size:25px">{{ fullname }}</b>
-	    <br>
+	    <b style="font-size:25px">{{ fullname }}</b>
 	  </a>
-	  <hr style="width: 100%">
-	  <div style="text-align:center; display:inline-block; width:100%;">
-	    <a href="/">profile</a>
-	    <a href="/posts">posts</a>
-	  </div>
+	  -- 
+	  <a href="/"> profile </a>
+	  <a href="/posts"> posts </a>
+	</div>
+
+	<div class="searchbar" >
+	  <form action="/search_user" style="float: right" method="post">
+	    {% csrf_token %}
+	    <input class="searchfield" name="username" id="username" type="text" placeholder="Username">
+	    <input type="submit" value="Search">
+	  </form>
 	</div>
       </div>
     </div>
-
-    <br>
 
     <div class="middle" style="padding-top: 50px">
       <div class="main">

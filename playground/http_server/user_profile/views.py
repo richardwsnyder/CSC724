@@ -9,7 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 import global_config
 from user_profile.models import *
-from .forms import NewPostForm
+from .forms import *
 from django.core.serializers.json import DjangoJSONEncoder
 
 import json
@@ -183,3 +183,8 @@ def index(request):
     return render(request, 'profile.html', temp)
 
 # Add routes that 
+def search_user(request):
+    if request.method == 'POST':
+        form = SearchUserForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect('/user/' + str(form.cleaned_data['username']))
