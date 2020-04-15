@@ -20,10 +20,10 @@ import user_profile.views as views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('posts', views.get_posts),
-    path('posts/<slug:username>', views.get_posts_remote),
-    path('directory', views.get_profile_directory),
-    path('user/<slug:username>', views.get_user),
+    path('posts', views.get_posts, name='get-posts'),
+    path('posts/<slug:username>', views.get_posts_remote, name='get-posts-remote'),
+    path('directory', views.get_profile_directory, name='get-directory'),
+    path('user/<slug:username>', views.get_user, name='get-user'),
     path('api/posts', views.api_get_posts),
     path('api/profile', views.api_get_profile),
     path('api/user/<slug:username>', views.api_get_user),

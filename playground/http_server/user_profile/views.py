@@ -19,13 +19,16 @@ global_config.init()
 def get_our_profile():
     """Get local profile"""
     path = os.path.dirname(os.path.realpath(__file__))
-    profile = ''
+    profile = {}
+    profile['fullname'] = global_config.config['account']['fullname']
+    profile['username'] = global_config.config['account']['username']
     with open(path + '/../../profile/profile.html', 'r') as content_file:
-        profile = content_file.read()
+        profile['html'] = content_file.read()
     return profile
 
 def api_get_profile(request):
-    return HttpResponse("done it")
+    profile = get_our_profile()
+    return HttpResponse(json.dumps(profile, cls=DjangoJSONEncoder))
 
 def get_user_remote(username):
     """Get somebody else's (username's) profile"""
@@ -40,7 +43,7 @@ def get_user_remote(username):
     # now wait for an answer
     profile = global_config.pipe.recv()
 
-    return profile
+    return json.loads(profile)
 
 def get_posts_remote(request, username):
     """Get somebody else's (username's) posts"""
@@ -96,15 +99,13 @@ def get_user_raw(request, username):
     return profile
 
 def api_get_user(request, username):
-    ret = {}
-    ret['user'] = username
-    ret['profile'] = get_user_raw(request, username)
-    return HttpResponse(json.dumps(ret, cls=DjangoJSONEncoder))
+    profile = get_user_raw(request, username)
+    return HttpResponse(json.dumps(profile, cls=DjangoJSONEncoder))
 
 def get_user(request, username):
     profile = get_user_raw(request, username)
     temp = {}
-    temp['html'] = profile
+    temp['profile'] = profile
     temp['fullname'] = global_config.config['account']['fullname']
     temp['username'] = global_config.config['account']['username']
     return render(request, 'profile.html', temp)
@@ -176,9 +177,9 @@ def get_posts(request):
 def index(request):
     """Return our profile when hitting / route"""
     temp = {}
-    temp['html'] = get_our_profile()
     temp['fullname'] = global_config.config['account']['fullname']
     temp['username'] = global_config.config['account']['username']
+    temp['profile'] = get_our_profile()
     return render(request, 'profile.html', temp)
 
 # Add routes that 

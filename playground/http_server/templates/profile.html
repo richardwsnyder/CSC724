@@ -5,6 +5,15 @@
 <br>
 <br>
 
-{{ html| safe }}
+<h1>
+  {{profile.fullname}}
+  <a href="{% url 'get-user' profile.username %}">@{{profile.username}} </a>
+</h1>
+
+<h4>
+  <a href="{% url 'get-posts-remote' profile.username %}">posts</a>
+</h4>
+
+{{ profile.html| safe }}
 
 {% endblock %}
