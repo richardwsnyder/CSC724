@@ -1,0 +1,37 @@
+{% load static %}
+
+<!doctype html>
+<html>
+    <head>
+      <meta charset="utf-8">
+      <link rel="stylesheet" type="text/css" href="{% static 'navbar.css' %}">
+    </head>
+
+    <!--- Navigation Bar --->
+    <div class="top bar">
+      <div class="topnav">
+	<div style="display: inline-block;">
+	  <a href="/">
+	    <b style="text-align:center; width:100%; display:inline-block; font-size:25px">{{ fullname }}</b>
+	    <br>
+	  </a>
+	  <hr style="width: 100%">
+	  <div style="text-align:center; display:inline-block; width:100%;">
+	    <a href="/">profile</a>
+	    <a href="/posts">posts</a>
+	  </div>
+	</div>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="middle" style="padding-top: 50px">
+      <div class="main">
+	<div>
+	  {% block content %}
+          {% endblock %}
+	</div>
+      </div>
+    </div>
+</html>

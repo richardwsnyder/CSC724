@@ -1,0 +1,190 @@
+/* backgrounds */
+/* darkish blue #1C6169 */
+/* darkish red #3A0C0C */
+/* darkish gray #373639 */
+/* light blue #C0F6F2 */
+/* darker brown #201919 */
+
+/* Add a black background color to the top navigation */
+.topnav {
+    margin: 0 auto;
+    width: 20%; /* Full width */
+    font-family: monospace;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.top {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.bar {
+    background-color: #1C6169;
+    width: 100%;
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+    color: white;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.middle {
+    margin: 0 auto;
+    max-width: 900px;
+    width: 60%;
+}
+
+.offset {
+    margin: 0 auto;
+    max-width: 900px;
+    width: 90%;
+}
+
+/* Add a color to the active/current link */
+.topnav a.active {
+    color: white;
+}
+
+.text {
+    color: #93a0a1;
+}
+
+.contact {
+    color: #93a0a1;
+    padding-top: 7px;
+}
+.address {
+    padding-top: 2px;
+    background-color: #3A0C0C;
+    color: white;
+    padding-bottom: 2px;
+}
+
+.address:hover {
+    background-color: #4B3A34;
+}
+/* Colors:
+ *  red: #9c4142;
+ *  blue: #4eaee1;
+ *  green: #69a167;
+ *  text: #93a0a1;
+ */
+
+.main {
+    color: #626a6b;
+    font-family: monospace, monospace;
+    overflow: hidden;
+}
+
+.column {
+    float: left;
+    padding: 10px;
+}
+
+/* Left and right column */
+.column.left {
+    width: 25%;
+}
+
+/* Middle column */
+.column.right {
+    width: 50%;
+}
+
+/* Responsive layout - makes the three columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+    .column.left, .column.right {
+	width: 100%;
+    }
+}
+
+body {
+    margin-top: 30px; /* Add a top margin to avoid content overlay */
+}
+
+h1, h2, {
+    /* color: #C44A30; */
+    color: #3A0C0C;
+    /*text-shadow: 0px 0px 1px white;*/
+}
+
+.fullname {
+    color: #3A0C0C;
+    width: 50%;
+    font-size: 20px;
+}
+
+.username {
+    color: #373639;
+    width: 50%;
+    font-size: 12px;
+}
+
+a {
+    /* color: #C44A30; */
+    color: black;
+}
+
+/* code portions of markdown */
+code {
+    background: #eeeeee;
+    color: #19191a;
+    padding: 0px 2px 0px;
+    border-radius: 2px;
+}
+
+pre {
+    color: #19191a;
+    background: #eeeeee;
+    padding: 8px 8px 8px;
+    border-radius: 4px;
+    overflow-y:hidden;
+    overflow-x:auto;
+}
+/* don't shadow in large code blocks */
+pre code {
+    border-radius: 2px;
+}
+
+.desc {
+    color: #626a6b;
+    margin-bottom: 2px;
+}
+
+em {
+    font-weight: bold;
+    font-style: normal;
+    color: #555555;
+}
+
+.post {
+    font-weight: bold;
+    color: #19191a;
+    padding: 4px 4px 4px 4px;
+    font-family: consolas;
+    font-size: 18px;
+}
+
+.postblock {
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    border-radius: 4px;
+    margin: auto;
+}
+
+.date {
+    float: right;
+    color: #93a0a1;
+    font-size: 16px;
+    font-family: consolas;
+}

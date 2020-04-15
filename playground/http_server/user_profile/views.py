@@ -87,7 +87,11 @@ def get_user(request, username):
         end = time.time()
         print("time to get " + username + "'s profile: " + str(end - start))
 
-    return HttpResponse(profile)
+    temp = {}
+    temp['html'] = profile
+    temp['fullname'] = global_config.config['account']['fullname']
+    temp['username'] = global_config.config['account']['username']
+    return render(request, 'profile.html', temp)
 
 def get_posts(request):
     """Get or add to posts from SQLite database"""
@@ -112,6 +116,7 @@ def get_posts(request):
         page = paginator.get_page(num)
 
         temp = {}
+        temp['fullname'] = global_config.config['account']['fullname']
         temp['username'] = global_config.config['account']['username']
         temp['form'] = NewPostForm()
         temp['nextpage'] = num + 1
@@ -131,6 +136,10 @@ def get_posts(request):
 
 def index(request):
     """Return our profile when hitting / route"""
-    return HttpResponse(get_our_profile())
+    temp = {}
+    temp['html'] = get_our_profile()
+    temp['fullname'] = global_config.config['account']['fullname']
+    temp['username'] = global_config.config['account']['username']
+    return render(request, 'profile.html', temp)
 
 # Add routes that 

@@ -1,23 +1,30 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <title>Posts by {{ username }}</title>
-    </head>
+{% extends 'base.html' %}
 
-    <h1>Make a new post</h1>
-    <form action="/posts" method="post">
-      {% csrf_token %}
-      {{ form }}
-      <input type="submit" value="Submit">
-    </form>
+{% block content %}
 
-    {% for p in posts %}
-    <body>
-        <h1>{{ p.date }}</h1>
-        <p>{{ p.text }}</p>
-    </body>
-    {% endfor %}
+<h1>Make a new post</h1>
+<form action="/posts" method="post">
+  {% csrf_token %}
+  {{ form }}
+  <input type="submit" value="Submit">
+</form>
 
-    <a href="/posts?page={{ nextpage }}">More posts</a>
-</html>
+<br>
+<hr>
+<br>
+
+{% for p in posts %}
+<body>
+  <h1 class="fullname">{{ fullname }}</h1>
+  <div class="username">@{{ username }} - {{ p.date }}</div>
+  <div>
+    <br>
+    <p class="offset">{{ p.text }}</p>
+    <br>
+  </div>
+</body>
+{% endfor %}
+
+<a href="/posts?page={{ nextpage }}">More posts</a>
+
+{% endblock %}
