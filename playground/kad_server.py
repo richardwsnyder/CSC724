@@ -30,7 +30,7 @@ async def get_user_profile(kad, username):
     print(response.text)
     return response.text
 
-async def get_user_posts(kad, username):
+async def get_user_posts(kad, username, num):
     # get the value associated with "my-key" from the network
     result = await get_url_from_username(kad, username)
     print("Client: " + str(result))
@@ -39,7 +39,7 @@ async def get_user_posts(kad, username):
 
     # Now that we have gotten the users address from the network,
     # lets get their json profile
-    response = requests.get(str(result) + "/posts")
+    response = requests.get(str(result) + "/posts?page=" + str(num))
     print(response.text)
     return response.text
 
@@ -71,7 +71,7 @@ async def get_single_pipe_input(aio, kad):
     if work_order['request'] == 'get_profile':
         profile = await get_user_profile(kad, work_order['username'])
     elif work_order['request'] == 'get_posts':
-        profile = await get_user_posts(kad, work_order['username'])
+        profile = await get_user_posts(kad, work_order['username'], work_order['page_num'])
     elif work_order['request'] == 'get_directory':
         profile = await get_user_directory(aio, kad)
 

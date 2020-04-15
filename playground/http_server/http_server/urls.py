@@ -24,5 +24,8 @@ urlpatterns = [
     path('posts/<slug:username>', views.get_posts_remote),
     path('directory', views.get_profile_directory),
     path('user/<slug:username>', views.get_user),
+    path('api/posts', views.api_get_posts),
+    path('api/profile', views.api_get_profile),
+    path('api/user/<slug:username>', views.api_get_user),
     path('admin/', admin.site.urls),
 ]

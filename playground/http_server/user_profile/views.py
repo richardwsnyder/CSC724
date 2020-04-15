@@ -10,13 +10,9 @@ from django.core.paginator import Paginator
 import global_config
 from user_profile.models import *
 from .forms import NewPostForm
+from django.core.serializers.json import DjangoJSONEncoder
 
-# import json
-# import asyncio
-# import toml
-# import multiprocessing
-# import kad_server
-# from kademlia.network import Server
+import json
 
 global_config.init()
 
@@ -27,6 +23,9 @@ def get_our_profile():
     with open(path + '/../../profile/profile.html', 'r') as content_file:
         profile = content_file.read()
     return profile
+
+def api_get_profile(request):
+    return HttpResponse("done it")
 
 def get_user_remote(username):
     """Get somebody else's (username's) profile"""
@@ -45,9 +44,11 @@ def get_user_remote(username):
 
 def get_posts_remote(request, username):
     """Get somebody else's (username's) posts"""
+    num = int(request.GET.get('page', 1))
     work_order = {}
     work_order['request'] = 'get_posts'
     work_order['username'] = username
+    work_order['page_num'] = num
 
     # ask kad_server to complete our request
     print('get_user_posts_remote: sending work order: ' + str(work_order))
@@ -71,9 +72,8 @@ def get_profile_directory(request):
     directory = global_config.pipe.recv()
 
     return HttpResponse(directory)
-    
-# unused argument request
-def get_user(request, username):
+
+def get_user_raw(request, username):
     """Function that maps to one of the above calls"""
     profile = {}
     if username == global_config.config['account']['username']:
@@ -87,34 +87,66 @@ def get_user(request, username):
         end = time.time()
         print("time to get " + username + "'s profile: " + str(end - start))
 
+    return profile
+
+def api_get_user(request, username):
+    ret = {}
+    ret['user'] = username
+    ret['profile'] = get_user_raw(request, username)
+    return HttpResponse(json.dumps(ret, cls=DjangoJSONEncoder))
+
+def get_user(request, username):
+    profile = get_user_raw(request, username)
     temp = {}
     temp['html'] = profile
     temp['fullname'] = global_config.config['account']['fullname']
     temp['username'] = global_config.config['account']['username']
     return render(request, 'profile.html', temp)
 
-def get_posts(request):
+def get_posts_raw(request, num):
+    # do pagination
+    posts = Post.objects.order_by('-date')
+    # 10 posts per page
+    paginator = Paginator(posts, 4)
+
+    if num not in paginator.page_range:
+        return None
+
+    page = paginator.get_page(num)
+    return page
+
+def api_get_posts(request):
     """Get or add to posts from SQLite database"""
     if request.method == 'POST':
         form = NewPostForm(request.POST)
         if form.is_valid():
             p = Post(date=datetime.now(), text=form.cleaned_data['text'])
             p.save()
-            return HttpResponseRedirect('/posts')
+            return HttpResponse('post created')
     else:
         # get date range
         num = int(request.GET.get('page', 1))
 
-        # do pagination
-        posts = Post.objects.order_by('-date')
-        # 10 posts per page
-        paginator = Paginator(posts, 4)
+        posts = get_posts_raw(request, num)
+        ret = {}
+        ret['page_num'] = num
+        pl = []
+        for p in posts.object_list:
+            entry = {}
+            entry['date'] = p.date
+            entry['text'] = p.text
+            pl.append(entry)
+        ret['posts'] = pl
 
-        if num not in paginator.page_range:
-            return HttpResponse('')
+        return HttpResponse(json.dumps(ret, cls=DjangoJSONEncoder))
 
-        page = paginator.get_page(num)
+def get_posts(request):
+    num = int(request.GET.get('page', 1))
+    page = get_posts_raw(request, num)
 
+    if request.method == 'POST':
+        return HttpResponseRedirect('/posts')
+    else:
         temp = {}
         temp['fullname'] = global_config.config['account']['fullname']
         temp['username'] = global_config.config['account']['username']
@@ -132,7 +164,6 @@ def get_posts(request):
 #     """Get or add to the list of usernames that you follow"""
 #     if request.method == 'POST':
 #         p = Followers(name='', dateAdded=datetime.now())
-
 
 def index(request):
     """Return our profile when hitting / route"""
