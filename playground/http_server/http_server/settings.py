@@ -26,7 +26,6 @@ SECRET_KEY = 'plr^(b4x##t_6k%ae9a^i8-2_tjuzdpv0#2jn#4n#&3$k9ge-4'
 DEBUG = True
 
 USE_TZ = True
-TIME_ZONE = 'US/Eastern'
 
 # might need to read toml file
 # to allow addr

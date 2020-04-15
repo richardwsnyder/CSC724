@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 import global_config
 from user_profile.models import *
 from .forms import NewPostForm
-import models
+
 # import json
 # import asyncio
 # import toml
