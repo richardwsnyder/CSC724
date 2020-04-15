@@ -2,6 +2,7 @@
 
 {% block content %}
 
+{% if form %}
 <h1>Make a new post</h1>
 <form action="/posts" method="post">
   {% csrf_token %}
@@ -11,12 +12,13 @@
 
 <br>
 <hr>
+{% endif %}
 <br>
 
 {% for p in posts %}
 <body>
-  <h1 class="fullname">{{ fullname }}</h1>
-  <div class="username">@{{ username }} - {{ p.date }}</div>
+  <h1 class="fullname">{{ p.fullname }}</h1>
+  <div class="username">@{{ p.username }} - {{ p.date }}</div>
   <div>
     <br>
     <p class="offset">{{ p.text }}</p>
@@ -25,6 +27,6 @@
 </body>
 {% endfor %}
 
-<a href="/posts?page={{ nextpage }}">More posts</a>
+<a href="{{ nextpage| safe }}">More posts</a>
 
 {% endblock %}

@@ -35,11 +35,11 @@ async def get_user_posts(kad, username, num):
     result = await get_url_from_username(kad, username)
     print("Client: " + str(result))
     if str(result) == 'None':
-        return '<html><h>Posts for user ' + username + ' not found</h></html>'
+        return 'Posts for user ' + username + ' not found'
 
     # Now that we have gotten the users address from the network,
     # lets get their json profile
-    response = requests.get(str(result) + "/posts?page=" + str(num))
+    response = requests.get(str(result) + "/api/posts?page=" + str(num))
     print(response.text)
     return response.text
 

@@ -55,9 +55,15 @@ def get_posts_remote(request, username):
     global_config.pipe.send(work_order)
 
     # now wait for an answer
-    posts = global_config.pipe.recv()
+    posts_raw = global_config.pipe.recv()
+    posts = json.loads(posts_raw)
+    temp = {}
+    temp['fullname'] = global_config.config['account']['fullname']
+    temp['username'] = global_config.config['account']['username']
+    temp['nextpage'] = "/posts/" + username + "?page=" + str(num + 1)
+    temp['posts'] = posts['posts']
 
-    return HttpResponse(posts)
+    return render(request, 'posts.html', temp)
 
 def get_profile_directory(request):
     """Get a list of all profiles in the network"""
@@ -113,7 +119,15 @@ def get_posts_raw(request, num):
         return None
 
     page = paginator.get_page(num)
-    return page
+    pl = []
+    for p in page.object_list:
+        entry = {}
+        entry['fullname'] = global_config.config['account']['fullname']
+        entry['username'] = global_config.config['account']['username']
+        entry['date'] = p.date
+        entry['text'] = p.text
+        pl.append(entry)
+    return pl
 
 def api_get_posts(request):
     """Get or add to posts from SQLite database"""
@@ -130,19 +144,13 @@ def api_get_posts(request):
         posts = get_posts_raw(request, num)
         ret = {}
         ret['page_num'] = num
-        pl = []
-        for p in posts.object_list:
-            entry = {}
-            entry['date'] = p.date
-            entry['text'] = p.text
-            pl.append(entry)
-        ret['posts'] = pl
+        ret['posts'] = posts
 
         return HttpResponse(json.dumps(ret, cls=DjangoJSONEncoder))
 
 def get_posts(request):
     num = int(request.GET.get('page', 1))
-    page = get_posts_raw(request, num)
+    posts = get_posts_raw(request, num)
 
     if request.method == 'POST':
         return HttpResponseRedirect('/posts')
@@ -151,8 +159,8 @@ def get_posts(request):
         temp['fullname'] = global_config.config['account']['fullname']
         temp['username'] = global_config.config['account']['username']
         temp['form'] = NewPostForm()
-        temp['nextpage'] = num + 1
-        temp['posts'] = page.object_list
+        temp['nextpage'] = "/posts?page=" + str(num + 1)
+        temp['posts'] = posts
 
         return render(request, 'posts.html', temp)
 
