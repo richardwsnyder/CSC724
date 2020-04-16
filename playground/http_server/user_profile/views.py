@@ -165,14 +165,21 @@ def get_posts(request):
 
         return render(request, 'posts.html', temp)
 
-# Have to read the Django docs to figure out
-# how to add and remove a username from the
-# db
+def get_following(request):
+    """Get or add to the list of usernames that you follow"""
+    followingList = Following.objects.all()
+    for following in followingList:
+        print(following)
 
-# def get_following(request):
-#     """Get or add to the list of usernames that you follow"""
-#     if request.method == 'POST':
-#         p = Followers(name='', dateAdded=datetime.now())
+def addToFollowing(request, username):
+    """Add a username to the following list"""
+    following = Following(name=username, dateAdded=datetime.now())
+    following.save()
+
+def removeFromFollowing(request, username):
+    """Remove a user from the following list"""
+    following = Following.objects.filter(name=username)
+    following.delete()
 
 def index(request):
     """Return our profile when hitting / route"""
