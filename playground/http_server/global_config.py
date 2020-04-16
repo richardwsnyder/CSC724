@@ -1,5 +1,9 @@
 # global sharing across modules
 
+# when running python manage.py this will
+# stop interpreter from complaining about kad_server
+import sys
+sys.path.insert(1, '../')
 import multiprocessing
 import kad_server
 import os
@@ -8,12 +12,17 @@ import toml
 def get_config():
     global config
     if config == -1:
-        path = os.environ['SAD_CONFIG_FILE']
-        print('getting config from ' + path)
-        with open(path, 'r') as content_file:
-            global kad_port
-            config = toml.load(content_file)
-            kad_port = config['connection']['network_port']
+        try:
+            path = os.environ['SAD_CONFIG_FILE']
+            print('getting config from ' + path)
+            with open(path, 'r') as content_file:
+                global kad_port
+                config = toml.load(content_file)
+                kad_port = config['connection']['network_port']
+        # if not running sad.py, os.environ[] won't insert
+        # the profile into the dictionary. Catch the KeyError 
+        except KeyError:
+            print("os.environ[] doesn't containt the key SAD_CONFIG_FILE")
 
 def get_kad_server():
     global kad_proc
