@@ -45,9 +45,8 @@ def get_user_remote(username):
 
     return json.loads(profile)
 
-def get_posts_remote(request, username):
+def get_posts_remote_raw(request, username, num):
     """Get somebody else's (username's) posts"""
-    num = int(request.GET.get('page', 1))
     work_order = {}
     work_order['request'] = 'get_posts'
     work_order['username'] = username
@@ -60,6 +59,11 @@ def get_posts_remote(request, username):
     # now wait for an answer
     posts_raw = global_config.pipe.recv()
     posts = json.loads(posts_raw)
+    return posts
+
+def get_posts_remote(request, username):
+    num = int(request.GET.get('page', 1))
+    posts = get_posts_remote_raw(request, username, num)
     temp = {}
     temp['fullname'] = global_config.config['account']['fullname']
     temp['username'] = global_config.config['account']['username']
@@ -208,3 +212,34 @@ def search_user(request):
         form = SearchUserForm(request.POST)
         if form.is_valid():
             return HttpResponseRedirect('/user/' + str(form.cleaned_data['username']))
+
+def get_feed_raw(request, num):
+    following = Following.objects.all()
+    posts = []
+    for f in following:
+        print('--- getting posts for ' + f.name)
+        user_posts = {}
+        if f.name == global_config.config['account']['username']:
+            user_posts = get_posts_raw(request, num)
+        else:
+            user_posts = get_posts_remote_raw(request, f.name, num)['posts']
+
+        posts = posts + user_posts
+    print(posts)
+    print('-------------')
+    return posts
+
+def api_get_feed(request):
+    num = int(request.GET.get('page', 1))
+    user_posts = get_feed_raw(request, num)
+    return HttpResponse(json.dumps(user_posts, cls=DjangoJSONEncoder))
+
+def get_feed(request):
+    num = int(request.GET.get('page', 1))
+    user_posts = get_feed_raw(request, num)
+    temp = {}
+    temp['fullname'] = global_config.config['account']['fullname']
+    temp['username'] = global_config.config['account']['username']
+    temp['nextpage'] = "/feed?page=" + str(num + 1)
+    temp['posts'] = user_posts
+    return render(request, 'posts.html', temp)
