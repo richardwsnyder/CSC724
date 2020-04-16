@@ -165,21 +165,34 @@ def get_posts(request):
 
         return render(request, 'posts.html', temp)
 
-def get_following(request):
-    """Get or add to the list of usernames that you follow"""
-    followingList = Following.objects.all()
-    for following in followingList:
-        print(following)
+def get_following_list(request):
+    """Get the list of usernames that you follow. Returns a QuerySet"""
+    return Following.objects.all()
 
 def addToFollowing(request, username):
     """Add a username to the following list"""
-    following = Following(name=username, dateAdded=datetime.now())
-    following.save()
+    alreadyFollowing = Following.objects.filter(name=username).count() > 0
+    retString = ''
+    if alreadyFollowing:
+        retString = 'You are already following ' + username
+    else:
+        following = Following(name=username, dateAdded=datetime.now())
+        following.save()
+        retString = 'Now following user ' + username
+    
+    return HttpResponse(retString)
 
 def removeFromFollowing(request, username):
     """Remove a user from the following list"""
-    following = Following.objects.filter(name=username)
-    following.delete()
+    notFollowing = Following.objects.filter(name=username).count() == 0
+    retString = ''
+    if notFollowing:
+        retString = 'You do not follow ' + username
+    else:
+        following = Following.objects.filter(name=username)
+        following.delete()
+        retString = 'You are now not following ' + username
+    return HttpResponse(retString)
 
 def index(request):
     """Return our profile when hitting / route"""

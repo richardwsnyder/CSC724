@@ -24,6 +24,8 @@ urlpatterns = [
     path('posts/<slug:username>', views.get_posts_remote, name='get-posts-remote'),
     path('directory', views.get_profile_directory, name='get-directory'),
     path('user/<slug:username>', views.get_user, name='get-user'),
+    path('user/<slug:username>/follow', views.addToFollowing, name='add-to-following-list'),
+    path('user/<slug:username>/unfollow', views.removeFromFollowing, name='remove-from-following-list'),
     path('api/posts', views.api_get_posts),
     path('api/profile', views.api_get_profile),
     path('api/user/<slug:username>', views.api_get_user),

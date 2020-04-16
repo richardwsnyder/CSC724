@@ -11,6 +11,14 @@
 </h1>
 
 <h4>
+  <a href="{% url 'add-to-following-list' profile.username %}">Follow</a>
+</h4>
+
+<h4>
+  <a href="{% url 'remove-from-following-list' profile.username %}">Unfollow</a>
+</h4>
+
+<h4>
   <a href="{% url 'get-posts-remote' profile.username %}">posts</a>
 </h4>
 
