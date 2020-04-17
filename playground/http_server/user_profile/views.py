@@ -11,6 +11,7 @@ import global_config
 from user_profile.models import *
 from .forms import *
 from django.core.serializers.json import DjangoJSONEncoder
+from django.core import serializers
 
 import json
 
@@ -123,7 +124,7 @@ def get_posts_raw(request, num):
         postlist = posts
     else:
         # 10 posts per page
-        paginator = Paginator(posts, 4)
+        paginator = Paginator(posts, 10)
 
         if num not in paginator.page_range:
             return None
@@ -234,31 +235,50 @@ def search_user(request):
         if form.is_valid():
             return HttpResponseRedirect('/user/' + str(form.cleaned_data['username']))
 
-def get_feed_raw(request, num):
+def pull_fresh_feed(request):
     following = Following.objects.all()
-    posts = []
+    # clear the old data, we are regenerating everything
+    # each time this is run
+    FeedPost.objects.all().delete()
+
     for f in following:
         print('--- getting posts for ' + f.name)
         user_posts = {}
         if f.name == global_config.config['account']['username']:
-            user_posts = get_posts_raw(request, num)
+            user_posts = get_posts_raw(request, -1)
         else:
-            user_posts = get_posts_remote_raw(request, f.name, num)['posts']
+            user_posts = get_posts_remote_raw(request, f.name, -1)['posts']
 
-        posts = posts + user_posts
-    print(posts)
-    print('-------------')
-    return posts
+        # add posts from this user to the db
+        for post in user_posts:
+            fp = FeedPost(text=post['text'],
+                          date=post['date'],
+                          fullname=post['fullname'],
+                          username=post['username'])
+            fp.save()
+
+def get_feed_raw(request, num):
+    pull_fresh_feed(request)
+    # get feed paginator
+    posts = FeedPost.objects.order_by('-date')
+    paginator = Paginator(posts, 10)
+
+    if num not in paginator.page_range:
+        return None
+
+    page = paginator.get_page(num)
+    return page.object_list
 
 def api_get_feed(request):
     num = int(request.GET.get('page', 1))
     user_posts = get_feed_raw(request, num)
-    return HttpResponse(json.dumps(user_posts, cls=DjangoJSONEncoder))
+    return HttpResponse(serializers.serialize('json', user_posts))
 
 def get_feed(request):
     num = int(request.GET.get('page', 1))
     user_posts = get_feed_raw(request, num)
     temp = {}
+    temp['title'] = 'News Feed'
     temp['fullname'] = global_config.config['account']['fullname']
     temp['username'] = global_config.config['account']['username']
     temp['nextpage'] = "/feed?page=" + str(num + 1)

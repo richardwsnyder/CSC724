@@ -5,9 +5,16 @@ the forms
 from django.db import models
 
 class Post(models.Model):
-    """Posts from users"""
+    """Posts from this user"""
     text = models.CharField(max_length=200)
     date = models.DateTimeField('date published')
+
+class FeedPost(models.Model):
+    """Posts from any users"""
+    text = models.CharField(max_length=200)
+    date = models.DateTimeField('date published')
+    fullname = models.CharField(max_length=64)
+    username = models.CharField(max_length=32)
 
 class Followers(models.Model):
     """Followers list"""

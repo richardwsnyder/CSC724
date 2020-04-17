@@ -18,17 +18,21 @@
 {% for p in posts %}
 <body>
   {% if forloop.first %}
+  {% if title %}
+  <h1>{{ title }}</h1>
+  {% else %}
   <h1>
     Posts by {{p.fullname}}
     <a href="{% url 'get-user' p.username %}">@{{p.username}} </a>
   </h1>
+  {% endif %}
 
   {% endif %}
 
   <div style="width: 100%">
     <div class="fullname">{{ p.fullname }}</div>
     <div style="height: 100%; widht: 50%;">
-      <div class="username">@{{ p.username }}</div>
+      <a href="{% url 'get-user' p.username %}" class="username">@{{ p.username }}</a>
     </div>
     <div class="date">{{ p.date }}</div>
     <div style="clear: both"></div>
@@ -42,5 +46,11 @@
 {% endfor %}
 
 <a href="{{ nextpage| safe }}">More posts</a>
+
+<br>
+<hr>
+<br>
+<br>
+
 
 {% endblock %}
