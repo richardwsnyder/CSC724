@@ -27,6 +27,8 @@ urlpatterns = [
     path('user/<slug:username>', views.get_user, name='get-user'),
     path('user/<slug:username>/follow', views.addToFollowing, name='add-to-following-list'),
     path('user/<slug:username>/unfollow', views.removeFromFollowing, name='remove-from-following-list'),
+    path('followers/<slug:username>/addFollower', views.addFollower, name='add-follower'),
+    path('followers/<slug:username>/removeFollower', views.removeFollower, name='remove-follower'),
     path('api/posts', views.api_get_posts),
     path('api/posts/all', views.api_get_posts_all),
     path('api/feed', views.api_get_feed),

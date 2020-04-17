@@ -55,6 +55,24 @@ async def get_user_directory(aio, kad):
 
     return 'placeholder'
 
+async def add_follower(kad, username, my_username):
+    result = await get_url_from_username(kad, username)
+    print("Client: " + str(result))
+    if str(result) == 'None':
+        return '<html><h>User ' + username + ' not found</h></html>'
+    response = requests.get(str(result) + "/followers/" + my_username + "/addFollower")
+    print("response in add_follower: " + response.text)
+    return response.text
+
+async def remove_follower(kad, username, my_username):
+    result = await get_url_from_username(kad, username)
+    print("Client: " + str(result))
+    if str(result) == 'None':
+        return '<html><h>User ' + username + ' not found</h></html>'
+    response = requests.get(str(result) + "/followers/" + my_username + "/removeFollower")
+    print("response in remove_follower: " + response.text)
+    return response.text
+
 # this should be a pipe
 pipe = ''
 
@@ -72,6 +90,10 @@ async def get_single_pipe_input(aio, kad):
         profile = await get_user_posts(kad, work_order['username'], work_order['page_num'])
     elif work_order['request'] == 'get_directory':
         profile = await get_user_directory(aio, kad)
+    elif work_order['request'] == 'add_follower':
+        profile = await add_follower(kad, work_order['username'], work_order['my_username'])
+    elif work_order['request'] == 'remove_follower':
+        profile = await remove_follower(kad, work_order['username'], work_order['my_username'])
 
     pipe.send(profile)
 

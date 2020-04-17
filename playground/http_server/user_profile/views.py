@@ -195,6 +195,16 @@ def get_following_list(request):
     """Get the list of usernames that you follow. Returns a QuerySet"""
     return Following.objects.all()
 
+def addFollower(request, username):
+    follower = Followers(name=username, dateAdded=datetime.now())
+    follower.save()
+    return HttpResponse('added ' + username + ' to followers')
+
+def removeFollower(request, username):
+    follower = Followers.objects.filter(name=username)
+    follower.delete()
+    return HttpResponse('removed ' + username + ' from followers')
+
 def addToFollowing(request, username):
     """Add a username to the following list"""
     alreadyFollowing = Following.objects.filter(name=username).count() > 0
@@ -204,6 +214,18 @@ def addToFollowing(request, username):
     else:
         following = Following(name=username, dateAdded=datetime.now())
         following.save()
+        my_username = global_config.config['account']['username']
+        work_order = {}
+        work_order['request'] = 'add_follower'
+        work_order['my_username'] = my_username
+        work_order['username'] = username
+        print('addToFollower: sending work order: ' + str(work_order))
+        global_config.pipe.send(work_order)
+
+        respString = global_config.pipe.recv()
+        print('respString: ' + respString)
+        if respString != 'added ' + username + ' to followers':
+            print('something went wrong')
         retString = 'Now following user ' + username
     
     return HttpResponse(retString)
@@ -217,6 +239,18 @@ def removeFromFollowing(request, username):
     else:
         following = Following.objects.filter(name=username)
         following.delete()
+        my_username = global_config.config['account']['username']
+        work_order = {}
+        work_order['request'] = 'remove_follower'
+        work_order['my_username'] = my_username
+        work_order['username'] = username
+        print('removeFromFollowing: sending work order: ' + str(work_order))
+        global_config.pipe.send(work_order)
+
+        respString = global_config.pipe.recv()
+        print('respString: ' + respString)
+        if respString != 'removed ' + username + ' from followers':
+            print('something went wrong')
         retString = 'You are now not following ' + username
     return HttpResponse(retString)
 

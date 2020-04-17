@@ -21,6 +21,9 @@ class Followers(models.Model):
     name = models.CharField(max_length=200)
     dateAdded = models.DateTimeField('date follower added')
 
+    def __str__(self):
+        return self.name
+
 class Following(models.Model):
     """Following list"""
     name = models.CharField(max_length=200)

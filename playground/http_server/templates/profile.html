@@ -10,13 +10,31 @@
   <a href="{% url 'get-user' profile.username %}">@{{profile.username}} </a>
 </h1>
 
-<h4>
-  <a href="{% url 'add-to-following-list' profile.username %}">Follow</a>
-</h4>
+<form 
+  action="{% url 'add-to-following-list' profile.username %}" 
+  method="post"
+>
+  {% csrf_token %}
+  <button 
+    type="submit" 
+    name="follow" 
+  >
+    Follow {{profile.username}}
+  </button>
+</form>
 
-<h4>
-  <a href="{% url 'remove-from-following-list' profile.username %}">Unfollow</a>
-</h4>
+<form 
+  action="{% url 'remove-from-following-list' profile.username %}" 
+  method="post"
+>
+  {% csrf_token %}
+  <button 
+    type="submit" 
+    name="follow" 
+  >
+    Unfollow {{profile.username}}
+  </button>
+</form>
 
 <h4>
   <a href="{% url 'get-posts-remote' profile.username %}">posts</a>
