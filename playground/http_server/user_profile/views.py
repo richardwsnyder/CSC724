@@ -117,15 +117,22 @@ def get_user(request, username):
 def get_posts_raw(request, num):
     # do pagination
     posts = Post.objects.order_by('-date')
-    # 10 posts per page
-    paginator = Paginator(posts, 4)
+    postlist = []
+    if num == -1:
+        # return all posts
+        postlist = posts
+    else:
+        # 10 posts per page
+        paginator = Paginator(posts, 4)
 
-    if num not in paginator.page_range:
-        return None
+        if num not in paginator.page_range:
+            return None
 
-    page = paginator.get_page(num)
+        page = paginator.get_page(num)
+        postlist = page.object_list
+
     pl = []
-    for p in page.object_list:
+    for p in postlist:
         entry = {}
         entry['fullname'] = global_config.config['account']['fullname']
         entry['username'] = global_config.config['account']['username']
@@ -153,11 +160,25 @@ def api_get_posts(request):
 
         return HttpResponse(json.dumps(ret, cls=DjangoJSONEncoder))
 
+def api_get_posts_all(request):
+    # return all posts
+    posts = get_posts_raw(request, -1)
+
+    ret = {}
+    ret['posts'] = posts
+
+    return HttpResponse(json.dumps(ret, cls=DjangoJSONEncoder))
+
+
 def get_posts(request):
     num = int(request.GET.get('page', 1))
     posts = get_posts_raw(request, num)
 
     if request.method == 'POST':
+        form = NewPostForm(request.POST)
+        if form.is_valid():
+            p = Post(date=datetime.now(), text=form.cleaned_data['text'])
+            p.save()
         return HttpResponseRedirect('/posts')
     else:
         temp = {}
