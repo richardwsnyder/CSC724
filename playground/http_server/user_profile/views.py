@@ -68,6 +68,8 @@ def get_posts_remote(request, username):
     temp = {}
     temp['fullname'] = global_config.config['account']['fullname']
     temp['username'] = global_config.config['account']['username']
+    if username == global_config.config['account']['username']:
+        temp['form'] = NewPostForm()
     temp['nextpage'] = "/posts/" + username + "?page=" + str(num + 1)
     temp['posts'] = posts['posts']
 
