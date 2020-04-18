@@ -15,3 +15,8 @@ Dates
     * Experimental subjects
     * Instructions on how to set up and use system
     * Final paper
+
+Required Packages
+* toml
+* kademlia
+* django
