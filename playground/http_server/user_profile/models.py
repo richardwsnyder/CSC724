@@ -16,6 +16,10 @@ class FeedPost(models.Model):
     fullname = models.CharField(max_length=64)
     username = models.CharField(max_length=32)
 
+class User(models.Model):
+    fullname = models.CharField(max_length=64)
+    username = models.CharField(max_length=32)
+
 class Followers(models.Model):
     """Followers list"""
     name = models.CharField(max_length=200)

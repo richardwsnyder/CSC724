@@ -73,20 +73,6 @@ def get_posts_remote(request, username):
 
     return render(request, 'posts.html', temp)
 
-def get_profile_directory(request):
-    """Get a list of all profiles in the network"""
-    work_order = {}
-    work_order['request'] = 'get_directory'
-
-    # ask kad_server to complete our request
-    print('get_user_posts_remote: sending work order: ' + str(work_order))
-    global_config.pipe.send(work_order)
-
-    # now wait for an answer
-    directory = global_config.pipe.recv()
-
-    return HttpResponse(directory)
-
 def get_user_raw(request, username):
     """Function that maps to one of the above calls"""
     profile = {}
@@ -290,6 +276,8 @@ def pull_fresh_feed(request):
                           fullname=post['fullname'],
                           username=post['username'])
             fp.save()
+            u = User.objects.get_or_create(fullname=post['fullname'],
+                                           username=post['username'])
 
 def get_feed_raw(request, num):
     pull_fresh_feed(request)
@@ -318,3 +306,29 @@ def get_feed(request):
     temp['nextpage'] = "/feed?page=" + str(num + 1)
     temp['posts'] = user_posts
     return render(request, 'posts.html', temp)
+
+def get_known_users_raw(num):
+    users = User.objects.all()
+    if num == -1:
+        return users
+    paginator = Paginator(users, 10)
+
+    if num not in paginator.page_range:
+        return None
+
+    page = paginator.get_page(num)
+    return page.object_list
+
+def api_get_known_users(request):
+    users = get_known_users_raw(-1)
+    return HttpResponse(serializers.serialize('json', users))
+
+def get_known_users(request):
+    num = int(request.GET.get('page', 1))
+    users = get_known_users_raw(num)
+    temp = {}
+    temp['title'] = 'Known Users In This Network'
+    temp['fullname'] = global_config.config['account']['fullname']
+    temp['username'] = global_config.config['account']['username']
+    temp['users'] = users
+    return render(request, 'user_directory.html', temp)

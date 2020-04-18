@@ -20,13 +20,19 @@
 	  <a href="/feed"> latest posts </a>
 	</div>
 
-	<div class="searchbar" >
-	  <form action="/search_user" style="float: right" method="post">
-	    {% csrf_token %}
-	    <input class="searchfield" name="username" id="username" type="text" placeholder="Username">
-	    <input type="submit" value="Search">
-	  </form>
+	<div style="width: 40%; display: inline-block; float: right">
+	  <div class="directory">
+	    <a href="/profile_directory" style="float: right"> Profile Directory </a>
+	  </div>
+	  <div class="searchbar">
+	    <form action="/search_user" style="float: right" method="post">
+	      {% csrf_token %}
+	      <input class="searchfield" name="username" id="username" type="text" placeholder="Username">
+	      <input type="submit" value="Search">
+	    </form>
+	  </div>
 	</div>
+
       </div>
     </div>
 

@@ -17,8 +17,8 @@
 .menu {
     display: inline-block;
     float: left;
-    width: 65%;
-    top: 50%;
+    width: 50%;
+    top: 30%;
     padding-bottom: 20px;
 }
 
@@ -26,9 +26,13 @@
     display: inline-block;
     padding-bottom: 20px;
     float: right;
-    width: 35%;
-    position: absolute;
-    top: 36%;
+    width: 70%;
+}
+
+.directory {
+    display: inline-block;
+    width: 50%;
+    float: right;
 }
 
 input[type=button], input[type=submit], input[type=reset] {
