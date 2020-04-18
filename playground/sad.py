@@ -34,13 +34,10 @@ config = get_config()
 # --noreload is absolutely required or else the global malarkey i'm
 # doing will be messed up.
 
-# might want to remove python3.7 dependency, but will deal with that
-# at a later time
-
 # runserver is a django command to start a server
 http_proc = subprocess.run(
     [
-        'python3.7',
+        'python3',
         'http_server/manage.py',
         'runserver',
         '0.0.0.0:' + str(config['connection']['profile_port']),
