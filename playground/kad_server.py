@@ -5,6 +5,7 @@ import toml
 import requests
 from kademlia.network import Server
 from kademlia.crawling import *
+import socket
 
 def get_config():
     path = os.environ['SAD_CONFIG_FILE']
@@ -146,7 +147,7 @@ def kad_server_bootstrap(network_port, profile_port, username):
         aio.run_until_complete(asyncio.sleep(1))
 
     # set a value for the key "my-key" on the network
-    aio.run_until_complete(kad.set(username, "http://127.0.0.1:" + str(profile_port)))
+    aio.run_until_complete(kad.set(username, 'http://' + socket.gethostname() + ':' + str(profile_port)))
     aio.run_until_complete(asyncio.sleep(2))
 
     # run forever since we are the first node
@@ -175,7 +176,7 @@ def kad_server_join(network_port, profile_port, neighbor_ip, neighbor_port, user
     aio.run_until_complete(asyncio.sleep(1))
 
     # set a value for the key "my-key" on the network
-    aio.run_until_complete(kad.set(username, "http://127.0.0.1:" + str(profile_port)))
+    aio.run_until_complete(kad.set(username, 'http://' + socket.gethostname() + ':' + str(profile_port)))
     aio.run_until_complete(asyncio.sleep(2))
 
     # run forever since we are the first node

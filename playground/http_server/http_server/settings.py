@@ -29,7 +29,7 @@ USE_TZ = True
 
 # might need to read toml file
 # to allow addr
-ALLOWED_HOSTS = ["0.0.0.0", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
