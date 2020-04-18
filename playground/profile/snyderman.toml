@@ -1,0 +1,10 @@
+[account]
+username='snyderman'
+fullname='Snyder Man'
+
+[connection]
+action='join'
+network_port=7777
+profile_port=8000
+neighbor_ip='152.7.99.64'
+neighbor_port=7777
