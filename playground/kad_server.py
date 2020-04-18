@@ -176,7 +176,7 @@ def kad_server_join(network_port, profile_port, neighbor_ip, neighbor_port, user
     aio.run_until_complete(asyncio.sleep(1))
 
     # set a value for the key "my-key" on the network
-    aio.run_until_complete(kad.set(username, socket. + str(profile_port)))
+    aio.run_until_complete(kad.set(username, socket.gethostname() + str(profile_port)))
     aio.run_until_complete(asyncio.sleep(2))
 
     # run forever since we are the first node
