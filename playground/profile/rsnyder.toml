@@ -1,0 +1,8 @@
+[account]
+username='rsnyder'
+fullname='Richard Snyder'
+
+[connection]
+action='bootstrap'
+network_port=7777
+profile_port=8000
