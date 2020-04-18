@@ -1,10 +1,10 @@
 [account]
-username='snyderman'
-fullname='Snyder Man'
+username='anotheruser'
+fullname='Another User'
 
 [connection]
 action='join'
-network_port=7778
-profile_port=8001
+network_port=7777
+profile_port=8000
 neighbor_ip='vclv99-82.hpc.ncsu.edu'
 neighbor_port=7777
