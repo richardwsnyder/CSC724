@@ -44,7 +44,7 @@ def get_user_remote(username):
     # now wait for an answer
     profile = global_config.pipe.recv()
 
-    return json.loads(profile)
+    return profile
 
 def get_posts_remote_raw(request, username, num):
     """Get somebody else's (username's) posts"""
@@ -59,7 +59,7 @@ def get_posts_remote_raw(request, username, num):
 
     # now wait for an answer
     posts_raw = global_config.pipe.recv()
-    posts = json.loads(posts_raw)
+    posts = json.loads(posts_raw['body'])
     return posts
 
 def get_posts_remote(request, username):
@@ -85,10 +85,15 @@ def get_user_raw(request, username):
         print("time to get our profile: " + str(end - start))
     else:
         start = time.time()
-        profile = get_user_remote(username)
+        profile_raw = get_user_remote(username)
+        if profile_raw['status'] != 200:
+            profile['dne'] = True
+        else:
+            profile = json.loads(profile_raw['body'])
         end = time.time()
         print("time to get " + username + "'s profile: " + str(end - start))
 
+    print(profile)
     return profile
 
 def api_get_user(request, username):
@@ -210,7 +215,7 @@ def addToFollowing(request, username):
         print('addToFollower: sending work order: ' + str(work_order))
         global_config.pipe.send(work_order)
 
-        respString = global_config.pipe.recv()
+        respString = global_config.pipe.recv()['body']
         print('respString: ' + respString)
         if respString != 'added ' + username + ' to followers':
             print('something went wrong')
@@ -235,7 +240,7 @@ def removeFromFollowing(request, username):
         print('removeFromFollowing: sending work order: ' + str(work_order))
         global_config.pipe.send(work_order)
 
-        respString = global_config.pipe.recv()
+        respString = global_config.pipe.recv()['body']
         print('respString: ' + respString)
         if respString != 'removed ' + username + ' from followers':
             print('something went wrong')
