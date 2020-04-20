@@ -2,6 +2,13 @@
 
 {% block content %}
 
+{% if posts.dne %}
+
+<h1> Error </h1>
+<p> User does not exist </p>
+
+{% else %}
+
 {% if form %}
 <h1>Make a new post</h1>
 <form action="/posts" method="post">
@@ -46,6 +53,8 @@
 {% endfor %}
 
 <a href="{{ nextpage| safe }}">More posts</a>
+
+{% endif %}
 
 <br>
 <hr>

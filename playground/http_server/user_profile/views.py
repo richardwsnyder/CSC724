@@ -59,7 +59,11 @@ def get_posts_remote_raw(request, username, num):
 
     # now wait for an answer
     posts_raw = global_config.pipe.recv()
-    posts = json.loads(posts_raw['body'])
+    posts = {}
+    if posts_raw['status'] != 200:
+        posts['dne'] = True
+    else:
+        posts = json.loads(posts_raw['body'])
     return posts
 
 def get_posts_remote(request, username):
@@ -71,7 +75,7 @@ def get_posts_remote(request, username):
     if username == global_config.config['account']['username']:
         temp['form'] = NewPostForm()
     temp['nextpage'] = "/posts/" + username + "?page=" + str(num + 1)
-    temp['posts'] = posts['posts']
+    temp['posts'] = posts
 
     return render(request, 'posts.html', temp)
 
@@ -274,7 +278,11 @@ def pull_fresh_feed(request):
         if f.name == global_config.config['account']['username']:
             user_posts = get_posts_raw(request, -1)
         else:
-            user_posts = get_posts_remote_raw(request, f.name, -1)['posts']
+            user_posts = get_posts_remote_raw(request, f.name, -1)
+            if 'dne' in user_posts.keys():
+                user_posts = []
+            else:
+                user_posts = user_posts['posts']
 
         # add posts from this user to the db
         for post in user_posts:

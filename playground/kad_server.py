@@ -58,7 +58,9 @@ async def get_user_posts(kad, username, num):
     result = await get_url_from_username(kad, username)
     print("Client: " + str(result))
     if str(result) == 'None':
-        return 'Posts for user ' + username + ' not found'
+        temp = {}
+        temp['status'] = 404
+        return temp
 
     response = http_get_url(str(result) + "/api/posts?page=" + str(num))
     return response
@@ -83,7 +85,7 @@ async def add_follower(kad, username, my_username):
     if str(result) == 'None':
         return '<html><h>User ' + username + ' not found</h></html>'
     response = http_get_url(str(result) + "/followers/" + my_username + "/addFollower")
-    print("response in add_follower: " + response)
+    print("response in add_follower: " + str(response))
     return response
 
 async def remove_follower(kad, username, my_username):
@@ -92,7 +94,7 @@ async def remove_follower(kad, username, my_username):
     if str(result) == 'None':
         return '<html><h>User ' + username + ' not found</h></html>'
     response = http_get_url(str(result) + "/followers/" + my_username + "/removeFollower")
-    print("response in remove_follower: " + response)
+    print("response in remove_follower: " + str(response))
     return response
 
 # this should be a pipe
