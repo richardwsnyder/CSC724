@@ -49,6 +49,18 @@
 
 {{ profile.html| safe }}
 
+{% if profile.following %}
+<h3> Following </h3>
+{% for f in profile.following %}
+<div style="width: 100%">
+    <div style="height: 100%; widht: 50%;">
+      <a href="{% url 'get-user' f.name %}" class="username">@{{ f.name }}</a>
+    </div>
+    <div style="clear: both"></div>
+  </div>
+{% endfor %}
+{% endif %}
+
 {% endif %}
 
 {% endblock %}

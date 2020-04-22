@@ -23,6 +23,7 @@ def get_our_profile():
     profile = {}
     profile['fullname'] = global_config.config['account']['fullname']
     profile['username'] = global_config.config['account']['username']
+    profile['following'] = Following.objects.all()
     with open(path + '/../../profile/profile.html', 'r') as content_file:
         profile['html'] = content_file.read()
     return profile
