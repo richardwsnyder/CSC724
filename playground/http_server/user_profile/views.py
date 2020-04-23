@@ -23,6 +23,10 @@ def get_our_profile():
     profile = {}
     profile['fullname'] = global_config.config['account']['fullname']
     profile['username'] = global_config.config['account']['username']
+    profile['following'] = []
+    for f in Following.objects.all():
+        profile['following'].append({'name': f.name})
+
     with open(path + '/../../profile/profile.html', 'r') as content_file:
         profile['html'] = content_file.read()
     return profile
@@ -44,7 +48,7 @@ def get_user_remote(username):
     # now wait for an answer
     profile = global_config.pipe.recv()
 
-    return json.loads(profile)
+    return profile
 
 def get_posts_remote_raw(request, username, num):
     """Get somebody else's (username's) posts"""
@@ -59,7 +63,11 @@ def get_posts_remote_raw(request, username, num):
 
     # now wait for an answer
     posts_raw = global_config.pipe.recv()
-    posts = json.loads(posts_raw)
+    posts = {}
+    if posts_raw['status'] != 200:
+        posts['dne'] = True
+    else:
+        posts = json.loads(posts_raw['body'])
     return posts
 
 def get_posts_remote(request, username):
@@ -71,7 +79,7 @@ def get_posts_remote(request, username):
     if username == global_config.config['account']['username']:
         temp['form'] = NewPostForm()
     temp['nextpage'] = "/posts/" + username + "?page=" + str(num + 1)
-    temp['posts'] = posts['posts']
+    temp['posts'] = posts
 
     return render(request, 'posts.html', temp)
 
@@ -85,10 +93,15 @@ def get_user_raw(request, username):
         print("time to get our profile: " + str(end - start))
     else:
         start = time.time()
-        profile = get_user_remote(username)
+        profile_raw = get_user_remote(username)
+        if profile_raw['status'] != 200:
+            profile['dne'] = True
+        else:
+            profile = json.loads(profile_raw['body'])
         end = time.time()
         print("time to get " + username + "'s profile: " + str(end - start))
 
+    print(profile)
     return profile
 
 def api_get_user(request, username):
@@ -210,7 +223,7 @@ def addToFollowing(request, username):
         print('addToFollower: sending work order: ' + str(work_order))
         global_config.pipe.send(work_order)
 
-        respString = global_config.pipe.recv()
+        respString = global_config.pipe.recv()['body']
         print('respString: ' + respString)
         if respString != 'added ' + username + ' to followers':
             print('something went wrong')
@@ -235,7 +248,7 @@ def removeFromFollowing(request, username):
         print('removeFromFollowing: sending work order: ' + str(work_order))
         global_config.pipe.send(work_order)
 
-        respString = global_config.pipe.recv()
+        respString = global_config.pipe.recv()['body']
         print('respString: ' + respString)
         if respString != 'removed ' + username + ' from followers':
             print('something went wrong')
@@ -269,7 +282,11 @@ def pull_fresh_feed(request):
         if f.name == global_config.config['account']['username']:
             user_posts = get_posts_raw(request, -1)
         else:
-            user_posts = get_posts_remote_raw(request, f.name, -1)['posts']
+            user_posts = get_posts_remote_raw(request, f.name, -1)
+            if 'dne' in user_posts.keys():
+                user_posts = []
+            else:
+                user_posts = user_posts['posts']
 
         # add posts from this user to the db
         for post in user_posts:

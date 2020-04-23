@@ -24,7 +24,12 @@ def get_config():
 
 # Launch processes for the kademlia network and the http server
 os.environ['SAD_CONFIG_FILE'] = sys.argv[1]
-os.environ['PYTHONPATH'] = '.'
+
+if 'PYTHONPATH' in os.environ.keys():
+    os.environ['PYTHONPATH'] = os.environ['PYTHONPATH'] + ':.'
+else:
+    os.environ['PYTHONPATH'] = '.'
+
 config = get_config()
 
 # once their ip:port address is looked up in the kademlia network, the

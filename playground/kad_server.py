@@ -7,6 +7,26 @@ from kademlia.network import Server
 from kademlia.crawling import *
 import socket
 
+# timeout after a quarter of a second
+TIMEOUT=0.25
+
+# helper for getting the content at a URL
+# returns a string
+def http_get_url(url):
+    print('Making http request to: {}', url)
+    print('---------')
+    ret = {}
+    try:
+        response = requests.get(url, timeout=TIMEOUT)
+        ret['status'] = response.status_code
+        ret['body'] = response.text
+    except:
+        ret['status'] = 404
+        ret['body'] = ''
+    print(ret)
+    print('---------')
+    return ret
+
 def get_config():
     path = os.environ['SAD_CONFIG_FILE']
     config = ''
@@ -23,24 +43,27 @@ async def get_user_profile(kad, username):
     result = await get_url_from_username(kad, username)
     print("Client: " + str(result))
     if str(result) == 'None':
-        return '<html><h>User ' + username + ' not found</h></html>'
+        temp = {}
+        temp['status'] = 404
+        return temp
 
     # Now that we have gotten the users address from the network,
     # lets get their json profile
-    response = requests.get(str(result) + "/api/profile")
-    print(response.text)
-    return response.text
+    response = http_get_url(str(result) + "/api/profile")
+    print(response)
+    return response
 
 async def get_user_posts(kad, username, num):
     # get the value associated with "my-key" from the network
     result = await get_url_from_username(kad, username)
     print("Client: " + str(result))
     if str(result) == 'None':
-        return 'Posts for user ' + username + ' not found'
+        temp = {}
+        temp['status'] = 404
+        return temp
 
-    response = requests.get(str(result) + "/api/posts?page=" + str(num))
-    print(response.text)
-    return response.text
+    response = http_get_url(str(result) + "/api/posts?page=" + str(num))
+    return response
 
 async def get_user_directory(aio, kad):
     print('get_user_directory:')
@@ -61,18 +84,18 @@ async def add_follower(kad, username, my_username):
     print("Client: " + str(result))
     if str(result) == 'None':
         return '<html><h>User ' + username + ' not found</h></html>'
-    response = requests.get(str(result) + "/followers/" + my_username + "/addFollower")
-    print("response in add_follower: " + response.text)
-    return response.text
+    response = http_get_url(str(result) + "/followers/" + my_username + "/addFollower")
+    print("response in add_follower: " + str(response))
+    return response
 
 async def remove_follower(kad, username, my_username):
     result = await get_url_from_username(kad, username)
     print("Client: " + str(result))
     if str(result) == 'None':
         return '<html><h>User ' + username + ' not found</h></html>'
-    response = requests.get(str(result) + "/followers/" + my_username + "/removeFollower")
-    print("response in remove_follower: " + response.text)
-    return response.text
+    response = http_get_url(str(result) + "/followers/" + my_username + "/removeFollower")
+    print("response in remove_follower: " + str(response))
+    return response
 
 # this should be a pipe
 pipe = ''
