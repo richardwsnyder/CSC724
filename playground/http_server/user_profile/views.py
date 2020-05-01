@@ -79,8 +79,10 @@ def get_posts_remote(request, username):
     if username == global_config.config['account']['username']:
         temp['form'] = NewPostForm()
     temp['nextpage'] = "/posts/" + username + "?page=" + str(num + 1)
-    temp['posts'] = posts
+    temp['posts'] = posts['posts']
 
+    print('--temp--')
+    print(temp)
     return render(request, 'posts.html', temp)
 
 def get_user_raw(request, username):
@@ -190,6 +192,8 @@ def get_posts(request):
         temp['nextpage'] = "/posts?page=" + str(num + 1)
         temp['posts'] = posts
 
+        print('--temp--')
+        print(temp)
         return render(request, 'posts.html', temp)
 
 def get_following_list(request):
@@ -324,6 +328,8 @@ def get_feed(request):
     temp['username'] = global_config.config['account']['username']
     temp['nextpage'] = "/feed?page=" + str(num + 1)
     temp['posts'] = user_posts
+    print('--temp--')
+    print(temp)
     return render(request, 'posts.html', temp)
 
 def get_known_users_raw(num):
