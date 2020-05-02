@@ -27,4 +27,6 @@ for endpoint in endpoints:
     end = time.time()
     print('confirm the response: ' + str(response))
 
-    output_file.write('Time it took to call {}: {}s'.format(endpoint, end-begin))
+    output_file.write('Time it took to call {}: {}s\n'.format(endpoint, end-begin))
+
+output_file.write('\n\n')
