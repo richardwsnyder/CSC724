@@ -1,4 +1,28 @@
-# The sad network
+# A decentralized social network
+
+## Running on VCL
+Rent out two Ubuntu 18.04 VCL nodes. One will be the bootstrap server and
+one will join off of it. Now run the following:
+```
+# clone this repository and cd into it
+$ sudo ./install.sh
+```
+
+The nodes can be started with:
+```
+# on the node you have chosen to be the bootstrap
+$ python3.7 sad.py /Users/AShafer/csc/CSC724/playground/profile/cwheezer.toml
+
+# on the other node which will join off the bootstrap
+$ $ python3.7 sad.py /Users/AShafer/csc/CSC724/playground/profile/jneutron.toml
+```
+
+*Note*: Any nodes joining a network need to be configured to join off
+ an existing node. Full configuration details are below, you will need
+ to set the `neighbor_ip` field to the IP of the VCL node you wish to
+ join off of.
+
+# Overview
 
 There are two "servers" being run in the current project:
 1. Kademlia DHT server storing `username -> ip:port` pairs
